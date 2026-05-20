@@ -1,4 +1,4 @@
-bro please correct this readme make recurtes eye catching and making human view not ai generater make simple possible no emoji usge : <div align="center">
+ <div align="center">
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d0d1a,30:0a1628,60:0f2a5e,100:1a4a9e&height=260&section=header&text=Machine%20Learning%20From%20Scratch&fontSize=42&fontColor=ffffff&fontAlignY=42&desc=Pure%20Python%20%E2%80%A2%20NumPy%20%E2%80%A2%20Pandas%20%E2%80%A2%20Matplotlib%20%E2%80%A2%20Zero%20Black%20Box&descAlignY=62&descColor=7eb3ff&animation=fadeIn" width="100%"/>
 
