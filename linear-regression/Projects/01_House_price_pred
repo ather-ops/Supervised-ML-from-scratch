@@ -1,1 +1,322 @@
+"""
+House Price Prediction — Multiple Linear Regression from Scratch
+================================================================
+Algorithm: Multiple Linear Regression with Mini-Batch Gradient Descent
+No libraries: NumPy only — zero Scikit-Learn
+"""
 
+# ==================== Step 1: Import Libraries ====================
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+
+
+# ==================== Step 2: Load Dataset ====================
+df = pd.read_csv("housing_sample1.csv")  
+
+# Features and target
+X1 = df["Area"].values
+X2 = df["Bedrooms"].values
+X3 = df["Age"].values
+Y  = df["Price"].values
+
+n = len(df)
+
+print("Dataset loaded")
+print("="*60)
+print(f"Total samples : {n}")
+print(f"Features      : Area, Bedrooms, Age")
+print(f"Target        : Price")
+print("="*60)
+print("First 10 rows:")
+print(df.head(10).to_string())
+print("="*60)
+
+
+# ==================== Step 3: Exploratory Data Analysis ====================
+print("Basic Statistics:")
+print("="*60)
+print(df.describe().round(2))
+print("="*60)
+print("Missing values:")
+print(df.isnull().sum())
+print("="*60)
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+
+axes[0].scatter(df["Area"], Y, color="steelblue",
+                edgecolors="white", s=60, alpha=0.8)
+axes[0].set_xlabel("Area (sq ft)")
+axes[0].set_ylabel("Price")
+axes[0].set_title("Area vs Price (Before Training)")
+axes[0].grid(True, linestyle="--", alpha=0.5)
+
+axes[1].scatter(df["Bedrooms"], Y, color="darkorange",
+                edgecolors="white", s=60, alpha=0.8)
+axes[1].set_xlabel("Bedrooms")
+axes[1].set_ylabel("Price")
+axes[1].set_title("Bedrooms vs Price (Before Training)")
+axes[1].grid(True, linestyle="--", alpha=0.5)
+
+axes[2].scatter(df["Age"], Y, color="seagreen",
+                edgecolors="white", s=60, alpha=0.8)
+axes[2].set_xlabel("Age (years)")
+axes[2].set_ylabel("Price")
+axes[2].set_title("Age vs Price (Before Training)")
+axes[2].grid(True, linestyle="--", alpha=0.5)
+
+plt.suptitle("Exploratory Data Analysis — Raw Feature Relationships",
+             fontsize=13, y=1.02)
+plt.tight_layout()
+plt.show()
+print("="*60)
+
+
+# ==================== Step 4: Initialize Parameters ====================
+m1, m2, m3, b = 0, 0, 0, 0
+alpha      = 0.0000001  # Learning rate
+epochs     = 1000
+batch_size = 10
+
+print("Parameters Initialized")
+print("="*60)
+print(f"m1 (Area weight)     : {m1}")
+print(f"m2 (Bedrooms weight) : {m2}")
+print(f"m3 (Age weight)      : {m3}")
+print(f"b  (Bias)            : {b}")
+print("="*60)
+print(f"Learning rate (alpha): {alpha}")
+print(f"Epochs               : {epochs}")
+print(f"Batch size           : {batch_size}")
+print(f"Updates per epoch    : {int(np.ceil(n / batch_size))}")
+print(f"Total parameter updates: {epochs * int(np.ceil(n / batch_size))}")
+print("="*60)
+
+
+# ==================== Step 5: Track Loss and Parameters ====================
+loss_history = []
+m1_history, m2_history, m3_history, b_history = [], [], [], []
+
+
+# ==================== Step 6: Mini-Batch Gradient Descent Loop ====================
+for epoch in range(epochs):
+    # Shuffle dataset
+    indices    = np.arange(n)
+    np.random.shuffle(indices)
+    X1_shuffled = X1[indices]
+    X2_shuffled = X2[indices]
+    X3_shuffled = X3[indices]
+    Y_shuffled  = Y[indices]
+
+    # Mini-batch gradient descent
+    for i in range(0, n, batch_size):
+        X1_batch = X1_shuffled[i:i+batch_size]
+        X2_batch = X2_shuffled[i:i+batch_size]
+        X3_batch = X3_shuffled[i:i+batch_size]
+        Y_batch  = Y_shuffled[i:i+batch_size]
+        batch_n  = len(X1_batch)
+
+        # Predictions
+        Y_pred_batch = m1*X1_batch + m2*X2_batch + m3*X3_batch + b
+
+        # Errors
+        error_batch = Y_pred_batch - Y_batch
+
+        # Gradients
+        gradient_m1 = (2/batch_n) * np.sum(error_batch * X1_batch)
+        gradient_m2 = (2/batch_n) * np.sum(error_batch * X2_batch)
+        gradient_m3 = (2/batch_n) * np.sum(error_batch * X3_batch)
+        gradient_b  = (2/batch_n) * np.sum(error_batch)
+
+        # Update parameters
+        m1 -= alpha * gradient_m1
+        m2 -= alpha * gradient_m2
+        m3 -= alpha * gradient_m3
+        b  -= alpha * gradient_b
+
+    # Track total loss on full dataset
+    Y_pred_total = m1*X1 + m2*X2 + m3*X3 + b
+    loss = np.mean((Y_pred_total - Y)**2)
+    loss_history.append(loss)
+    m1_history.append(m1)
+    m2_history.append(m2)
+    m3_history.append(m3)
+    b_history.append(b)
+
+    # Print every 100 epochs
+    if epoch % 100 == 0:
+        print(f"Epoch {epoch:>4}: Loss={loss:.4f}, "
+              f"m1={m1:.6f}, m2={m2:.6f}, "
+              f"m3={m3:.6f}, b={b:.6f}")
+
+
+# ==================== Step 7: Final Predictions and Metrics ====================
+df["Predicted_Price"] = m1*X1 + m2*X2 + m3*X3 + b
+MSE  = np.mean((df["Predicted_Price"] - Y)**2)
+RMSE = np.sqrt(MSE)
+MAE  = np.mean(np.abs(df["Predicted_Price"] - Y))
+
+print("="*80)
+print(f"Training Completed after {epochs} epochs")
+print(f"Final Parameters: m1={m1:.6f}, m2={m2:.6f}, m3={m3:.6f}, b={b:.6f}")
+print(f"MSE={MSE:.4f}, RMSE={RMSE:.4f}, MAE={MAE:.4f}")
+print("="*80)
+
+print("\nFinal learned equation:")
+print(f"  Price = {m1:.6f}*Area + {m2:.6f}*Bedrooms + {m3:.6f}*Age + {b:.6f}")
+print("="*80)
+
+# Comparison table — first 10 predictions
+comparison = pd.DataFrame({
+    "Area"           : X1[:10],
+    "Bedrooms"       : X2[:10],
+    "Age"            : X3[:10],
+    "Actual Price"   : Y[:10],
+    "Predicted Price": df["Predicted_Price"].values[:10].round(2),
+    "Error"          : (Y[:10] - df["Predicted_Price"].values[:10]).round(2)
+})
+print("\nFirst 10 predictions vs actual:")
+print("="*80)
+print(comparison.to_string(index=False))
+print("="*80)
+
+
+# ==================== Step 8: Visualization (6 Plots) ====================
+plt.figure(figsize=(18, 10))
+
+# Panel 1: Loss over epochs
+plt.subplot(2, 3, 1)
+plt.plot(loss_history, color="blue", linewidth=1.5)
+plt.title("Loss over Epochs")
+plt.xlabel("Epoch")
+plt.ylabel("MSE Loss")
+plt.grid(True)
+
+# Panel 2: Parameters over epochs
+plt.subplot(2, 3, 2)
+plt.plot(m1_history, label="m1 (Area)")
+plt.plot(m2_history, label="m2 (Bedrooms)")
+plt.plot(m3_history, label="m3 (Age)")
+plt.plot(b_history,  label="b (Bias)")
+plt.title("Parameters over Epochs")
+plt.xlabel("Epoch")
+plt.ylabel("Value")
+plt.legend()
+plt.grid(True)
+
+# Panel 3: Actual vs Predicted Price (Area axis)
+plt.subplot(2, 3, 3)
+plt.scatter(df["Area"], Y,                    label="Actual",    color="red",   alpha=0.5)
+plt.scatter(df["Area"], df["Predicted_Price"], label="Predicted", color="green", alpha=0.5)
+plt.title("Actual vs Predicted (Area)")
+plt.xlabel("Area")
+plt.ylabel("Price")
+plt.legend()
+plt.grid(True)
+
+# Panel 4: Actual vs Predicted scatter
+plt.subplot(2, 3, 4)
+plt.scatter(Y, df["Predicted_Price"], alpha=0.6)
+plt.plot([Y.min(), Y.max()], [Y.min(), Y.max()],
+         color="red", linestyle="--", label="Perfect Prediction")
+plt.title("Actual vs Predicted Price")
+plt.xlabel("Actual Price")
+plt.ylabel("Predicted Price")
+plt.legend()
+plt.grid(True)
+
+# Panel 5: Residuals
+plt.subplot(2, 3, 5)
+residuals = Y - df["Predicted_Price"]
+plt.scatter(df["Predicted_Price"], residuals, alpha=0.6)
+plt.axhline(y=0, color="red", linestyle="--")
+plt.title("Residual Plot")
+plt.xlabel("Predicted Price")
+plt.ylabel("Residuals")
+plt.grid(True)
+
+# Panel 6: Final prediction line
+plt.subplot(2, 3, 6)
+plt.scatter(df["Area"], Y, label="Actual", color="red", alpha=0.3)
+plt.plot(df["Area"], df["Predicted_Price"],
+         label="Final Prediction", color="blue", linewidth=2)
+plt.title("Final Predictions")
+plt.xlabel("Area")
+plt.ylabel("Price")
+plt.legend()
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+
+# ==================== Step 9: Loss Convergence Deep Dive ====================
+fig, axes = plt.subplots(1, 2, figsize=(13, 4))
+
+# Early phase — first 100 epochs
+axes[0].plot(loss_history[:100], color="steelblue", linewidth=2)
+axes[0].set_title("Loss — First 100 Epochs (Initial Drop)")
+axes[0].set_xlabel("Epoch")
+axes[0].set_ylabel("MSE Loss")
+axes[0].grid(True, linestyle="--", alpha=0.5)
+
+# Final phase — last 100 epochs
+axes[1].plot(range(900, 1000), loss_history[900:], color="seagreen", linewidth=2)
+axes[1].set_title("Loss — Last 100 Epochs (Convergence Zone)")
+axes[1].set_xlabel("Epoch")
+axes[1].set_ylabel("MSE Loss")
+axes[1].grid(True, linestyle="--", alpha=0.5)
+
+plt.suptitle("Loss Curve Convergence Analysis", fontsize=13, y=1.02)
+plt.tight_layout()
+plt.show()
+
+print("Loss Summary")
+print("="*60)
+print(f"Initial loss  (epoch 0)    : {loss_history[0]:.4f}")
+print(f"Loss at epoch 100          : {loss_history[100]:.4f}")
+print(f"Loss at epoch 500          : {loss_history[500]:.4f}")
+print(f"Final loss    (epoch 999)  : {loss_history[-1]:.4f}")
+print(f"Total loss reduction       : {loss_history[0] - loss_history[-1]:.4f}")
+print(f"Percentage reduction       : {(1 - loss_history[-1]/loss_history[0])*100:.2f}%")
+print("="*60)
+
+
+# ==================== Step 10: Predict Price for a New House ====================
+new_area     = 2000
+new_bedrooms = 3
+new_age      = 5
+
+new_price = m1 * new_area + m2 * new_bedrooms + m3 * new_age + b
+
+print("New House Prediction")
+print("="*60)
+print(f"Area           : {new_area} sq ft")
+print(f"Bedrooms       : {new_bedrooms}")
+print(f"Age            : {new_age} years")
+print("="*60)
+print(f"Calculation    :")
+print(f"  {m1:.6f} x {new_area}")
+print(f"+ {m2:.6f} x {new_bedrooms}")
+print(f"+ {m3:.6f} x {new_age}")
+print(f"+ {b:.6f}")
+print("="*60)
+print(f"Predicted Price: {new_price:.2f}")
+print("="*60)
+
+
+# ==================== Pipeline Summary ====================
+print("""
+Pipeline Summary
+================
+Step 1: Import pandas, numpy, matplotlib → No Scikit-Learn anywhere
+Step 2: Load CSV, extract feature arrays → Raw numpy arrays — no preprocessing
+Step 3: EDA — scatter plots and statistics → Same as any production pipeline
+Step 4: Initialize m1, m2, m3, b = 0 → Parameters start with zero knowledge
+Step 5: Understand gradient math → Forward pass, MSE loss, 4 partial derivatives
+Step 6: Mini-batch GD loop — 1000 epochs → Shuffle + batch + compute gradients + update
+Step 7: Final predictions and MSE/RMSE/MAE → Same metrics as Scikit-Learn notebook
+Step 8: 6 visualizations → Loss curve, parameter convergence, residuals
+Step 9: Loss convergence deep dive → Early drop vs final stability
+Step 10: New house prediction → Direct formula application — no scaler needed
+""")
