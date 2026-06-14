@@ -1,3 +1,5 @@
+![ML from Scratch](https://raw.githubusercontent.com/ather-ops/Supervised-ML-from-scratch/main/Assets/ml.png)
+
 # Supervised Machine Learning from Scratch
 
 Building every ML algorithm from the ground up — no scikit-learn, no TensorFlow, no abstractions. Every gradient, every loss function, every normalization step is written by hand using only Python, NumPy, Pandas, and Matplotlib.
