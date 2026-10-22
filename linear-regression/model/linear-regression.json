@@ -1,0 +1,9 @@
+{
+    "model": "Linear regression model from part-I",
+    "weights": -0.6596668063136476,
+    "bias": 79.80506779269658,
+    "mse": 61.38132072296613,
+    "mae": 7.125000000000002,
+    "learning_rate": 0.01,
+    "epochs": 1000
+}
