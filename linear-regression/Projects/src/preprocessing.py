@@ -113,7 +113,17 @@ def feature_scalig(x_train,x_test):
 
     return x_train_scaled,x_test_scaled,mean,std
 
-# Prediction function
-def predict(x,w,b):
-    pred = x@w +b
-    return pred
+# Scaling target values
+
+def scale_target(y_train, y_test):
+
+    mean = np.mean(y_train)
+    std = np.std(y_train)
+
+    if std == 0:
+        std = 1.0
+
+    y_train_scaled = (y_train-mean) / std
+    y_test_scaled = (y_test - mean) / std
+
+    return y_train_scaled, y_test_scaled, mean, std
