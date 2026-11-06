@@ -109,7 +109,7 @@ np.savez(
     feature_std=std,
     target_mean=y_mean,
     target_std=y_std,
-    feature_names=np.array(X.columns)
+    feature_names=np.asarray(X.columns, dtype="U")
 )
 
 print("\nModel saved successfully!")

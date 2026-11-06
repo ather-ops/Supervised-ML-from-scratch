@@ -55,4 +55,3 @@ def evaluate_model(y_actual, y_pred):
         "MSE": mse,
         "RMSE": rmse
     }
-print("Done all works perfectly")
