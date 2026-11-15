@@ -1,0 +1,19 @@
+{
+    "accuracy": 0.874274661508704,
+    "precision": 1.0,
+    "recall": 0.007633587786259542,
+    "f1_score": 0.015151515151515152,
+    "confusion_matrix": [
+        [
+            903,
+            0
+        ],
+        [
+            130,
+            1
+        ]
+    ],
+    "training_samples": 4135,
+    "test_samples": 1034,
+    "vocabulary_size": 5000
+}
