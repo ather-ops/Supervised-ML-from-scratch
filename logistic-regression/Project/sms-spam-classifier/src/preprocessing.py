@@ -1,11 +1,14 @@
-import re
 import string
+import re
 
-_TABLE = str.maketrans("", "", string.punctuation)
 
 def clean_text(text):
-    """Use identical text cleaning during training and inference."""
     if text is None:
         return ""
-    text = str(text).lower().translate(_TABLE)
+
+    text = str(text).lower()
+    text = text.translate(
+        str.maketrans("", "", string.punctuation)
+    )
+
     return re.sub(r"\s+", " ", text).strip()

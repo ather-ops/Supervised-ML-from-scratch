@@ -10,7 +10,6 @@ from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     confusion_matrix, classification_report
 )
-
 from src.model import LogisticRegressionScratch
 from src.preprocessing import clean_text
 
@@ -56,6 +55,30 @@ def main():
         learning_rate=0.5, epochs=1000, l2=0.01
     )
     model.fit(X_train_vec, y_train.to_numpy())
+
+
+    # Training diagnostics
+    train_probs = model.predict_proba(X_train_vec)
+    test_probs = model.predict_proba(X_test_vec)
+
+    print("\n--- Training Diagnostics ---")
+
+    print("Initial loss:", model.loss_history[0])
+    print("Final loss:", model.loss_history[-1])
+
+    print("\nTraining predictions:")
+    print("HAM:", np.sum(train_probs < 0.5))
+    print("SPAM:", np.sum(train_probs >= 0.5))
+
+    print("\nTest predictions:")
+    print("HAM:", np.sum(test_probs < 0.5))
+    print("SPAM:", np.sum(test_probs >= 0.5))
+
+    print("\nSpam probability statistics:")
+    print("Minimum:", np.min(test_probs))
+    print("Maximum:", np.max(test_probs))
+    print("Mean:", np.mean(test_probs))
+
 
     predictions = model.predict(X_test_vec)
     metrics = {

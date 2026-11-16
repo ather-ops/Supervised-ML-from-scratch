@@ -10,10 +10,11 @@ from src.preprocessing import clean_text
 MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
 
 
+
 def load_artifacts():
     weights_path = MODEL_DIR / "weights.npy"
     bias_path = MODEL_DIR / "bias.npy"
-    vectorizer_path = MODEL_DIR / "vectorizer.joblib"
+    vectorizer_path = MODEL_DIR / "tfidf_vectorizer.joblib"
     metrics_path = MODEL_DIR / "metrics.json"
 
     required_files = [
@@ -30,13 +31,14 @@ def load_artifacts():
             )
 
     weights = np.load(weights_path)
-    bias = float(np.load(bias_path))
+    bias = float(np.load(bias_path).item())
     vectorizer = joblib.load(vectorizer_path)
 
     with open(metrics_path, "r") as file:
         metrics = json.load(file)
 
     return weights, bias, vectorizer, metrics
+
 
 
 def sigmoid(z):
@@ -63,3 +65,5 @@ def predict_message(message):
         "spam_probability": spam_probability,
         "ham_probability": ham_probability
     }
+
+print("All works perfectly!")

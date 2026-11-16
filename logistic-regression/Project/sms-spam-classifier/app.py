@@ -21,9 +21,15 @@ st.divider()
 try:
     _, _, _, metrics = load_artifacts()
     backend_ready = True
-except FileNotFoundError:
+    backend_error = None
+
+except FileNotFoundError as exc:
     backend_ready = False
+    backend_error = str(exc)
     metrics = {}
+
+if not backend_ready:
+    st.error(f"Backend connection failed: {backend_error}")
 
 c1, c2, c3 = st.columns(3)
 with c1:

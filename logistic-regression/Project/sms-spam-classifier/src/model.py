@@ -1,8 +1,6 @@
 import numpy as np
 
 class LogisticRegressionScratch:
-    """Binary Logistic Regression implemented with NumPy; accepts SciPy sparse X."""
-
     def __init__(self, learning_rate=0.5, epochs=1000, l2=0.01):
         self.learning_rate = learning_rate
         self.epochs = epochs
