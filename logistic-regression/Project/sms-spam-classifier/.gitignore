@@ -1,8 +1,9 @@
+
 __pycache__/
 *.py[cod]
 .venv/
 venv/
+.env
+.vscode/
 .ipynb_checkpoints/
-models/*.npy
-models/*.joblib
-models/metrics.json
+.DS_Store
